@@ -1,0 +1,86 @@
+<html>
+<head>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sscjs@latest/dist/ssc.min.js"></script>
+</head>
+<body>
+<h1>simple @BroFi he delegation explorer</h1>
+
+<input type="button" id="updateButton" value="update" onclick="update()"/>
+<br/><br/>
+<div id="content"></div>
+<script>
+  const ssc = new SSC('https://api.hive-engine.com/rpc');
+
+  // update function
+  function update() {
+
+    var to = 'brofi';
+    var params = {};
+
+    if (to) {
+      params['to'] = to;
+    }
+
+    ssc.find(
+    'tokens',
+    'delegations',
+    params, 1000, 0, [], (err, result) => {
+
+    if (result) {
+      var symbols = {};
+      var table = document.getElementById("content");
+
+      result.forEach(function (item, index) {
+        var symbol = item.symbol;
+        if (symbol in symbols) {
+          symbols[symbol] = symbols[symbol] + parseFloat(item.quantity);
+        } else {
+          symbols[symbol] = parseFloat(item.quantity);
+        }
+      });
+      console.log(symbols);
+
+      var content = "";
+
+      for (var keySymbol in symbols) {
+        var sum = 0.0;
+        content += "<h3>"+keySymbol+"</h3>";
+        content += "<table id='resulttable' border='1' style='border: 1px solid black;white-space: nowrap; border-collapse:collapse;' cellpadding='10' cellspacing='0'>";
+        content += '<thead><td>from</td><td>to</td><td>quantity ('+keySymbol+')</td><td>percentage</td></thead>';
+
+        result.forEach(function (item, index) {
+          var itemSymbol = item.symbol;
+          if (keySymbol === item.symbol)  {
+            var quantity = parseFloat(item.quantity);
+            var total = symbols[keySymbol];
+            var formattedQuantity = quantity.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+            var formattedPercentage = ((quantity.toFixed(2)/total) * 100).toFixed(2) + "%";
+            content += '<tr><td>@'+ item.from+'</td><td>@'+ item.to+'</td><td align="right">'+formattedQuantity+'</td><td>'+formattedPercentage+'</td></tr>';
+            sum += quantity;
+          }
+          //console.log(item, index);
+        });
+
+        var formattedSum = sum.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+        content += '<tfoot><td></td><td></td><td align="right" style="font-weight: bold;">'+formattedSum+'</td></tfoot>';
+
+        content += '</table>';
+      }
+
+      table.innerHTML = content;
+    }
+
+    if (err) {
+      var table = document.getElementById("content");
+      table.innerHTML = "An error occured: " + err;
+    }
+
+    console.log(err, result);
+    });
+  }
+
+  update();
+</script>
+</body>
+</html>
