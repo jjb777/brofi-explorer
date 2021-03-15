@@ -46,9 +46,10 @@
 
       for (var keySymbol in symbols) {
         var sum = 0.0;
-        content += "<h3>"+keySymbol+"</h3>";
+        content += "<br/>";
         content += "<table id='resulttable' border='1' style='border: 1px solid black;white-space: nowrap; border-collapse:collapse;' cellpadding='5' cellspacing='0'>";
-        content += '<thead><td>from</td><td>to</td><td>quantity ('+keySymbol+')</td><td>percentage</td></thead>';
+        content += "<caption style='text-align:left;font-weight:bold;'>" + keySymbol + " delegation</caption>";
+        content += '<thead><td>from</td><td>to</td><td>quantity (' + keySymbol + ')</td><td>percentage</td></thead>';
 
         result.forEach(function (item, index) {
           var itemSymbol = item.symbol;
