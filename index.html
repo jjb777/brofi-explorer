@@ -63,9 +63,9 @@
       for (var keySymbol in symbols) {
         var sum = 0.0;
         content += "<br/>";
-        content += "<table class='table table-sm table-striped table-hover' id='resulttable' border='1' style='border: 1px solid black;white-space: nowrap; border-collapse:collapse;' cellpadding='5' cellspacing='0'>";
+        content += "<table class='table table-sm table-striped table-hover' id='resulttable' border='1' style='border: 1px solid #C0C0C0;white-space: nowrap; border-collapse:collapse;' cellpadding='5' cellspacing='0'>";
         content += "<caption style='text-align:left;font-weight:bold;'>" + keySymbol + "</caption>";
-        content += '<thead class="thead-light"><td scope="col">from</td><td scope="col">to</td><td scope="col">quantity</td><td scope="col">percentage</td></thead>';
+        content += '<thead class="thead-light" style="background-color:#D3D3D3; font-weight:bold;"><td scope="col">from</td><td scope="col">to</td><td scope="col">quantity</td><td scope="col">percentage</td></thead>';
 
         result.forEach(function (item, index) {
           var itemSymbol = item.symbol;
