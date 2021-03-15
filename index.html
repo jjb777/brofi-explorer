@@ -47,7 +47,7 @@
       for (var keySymbol in symbols) {
         var sum = 0.0;
         content += "<h3>"+keySymbol+"</h3>";
-        content += "<table id='resulttable' border='1' style='border: 1px solid black;white-space: nowrap; border-collapse:collapse;' cellpadding='10' cellspacing='0'>";
+        content += "<table id='resulttable' border='1' style='border: 1px solid black;white-space: nowrap; border-collapse:collapse;' cellpadding='5' cellspacing='0'>";
         content += '<thead><td>from</td><td>to</td><td>quantity ('+keySymbol+')</td><td>percentage</td></thead>';
 
         result.forEach(function (item, index) {
@@ -57,7 +57,7 @@
             var total = symbols[keySymbol];
             var formattedQuantity = quantity.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
             var formattedPercentage = ((quantity.toFixed(2)/total.toFixed(2)) * 100).toFixed(2) + "%";
-            content += '<tr><td>@'+ item.from+'</td><td>@'+ item.to+'</td><td align="right">'+formattedQuantity+'</td><td>'+formattedPercentage+'</td></tr>';
+            content += '<tr><td>@'+ item.from+'</td><td>@'+ item.to+'</td><td align="right">'+formattedQuantity+'</td><td align="right">'+formattedPercentage+'</td></tr>';
             sum += quantity;
           }
           //console.log(item, index);
