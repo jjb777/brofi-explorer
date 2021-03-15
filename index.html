@@ -2,14 +2,30 @@
 <head>
   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sscjs@latest/dist/ssc.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 </head>
 <body>
-  <img src="brofi.gif">
-<h2>simple <a href="https://hive.blog/@brofi" target="_blank">@BroFi</a> he delegation explorer</h2>
 
-<input type="button" id="updateButton" value="update" onclick="update()"/>
-<br/><br/>
-<div id="content"></div>
+<div class="jumbotron jumbotron-fluid">
+  <div class="container">
+    <h2 class="display-4"><center><img src="brofi.gif"><center></h2>
+    <center><h2 class="lead">simple <a href="https://hive.blog/@brofi" target="_blank">@BroFi</a> he delegation explorer</h2></center>
+  </div>
+</div>
+
+<div class="container" style="max-width:600px">
+  <div class="row">
+    <center>
+      <div class="col">
+        <input type="button" class="btn btn-primary" id="updateButton" value="update" onclick="update()"/>
+        <br/><br/>
+        <div id="content"></div>
+      </div>
+    </center>
+  </div>
+</div>
 <script>
   const ssc = new SSC('https://api.hive-engine.com/rpc');
 
@@ -47,9 +63,9 @@
       for (var keySymbol in symbols) {
         var sum = 0.0;
         content += "<br/>";
-        content += "<table id='resulttable' border='1' style='border: 1px solid black;white-space: nowrap; border-collapse:collapse;' cellpadding='5' cellspacing='0'>";
+        content += "<table class='table table-sm table-striped table-hover' id='resulttable' border='1' style='border: 1px solid black;white-space: nowrap; border-collapse:collapse;' cellpadding='5' cellspacing='0'>";
         content += "<caption style='text-align:left;font-weight:bold;'>" + keySymbol + "</caption>";
-        content += '<thead><td>from</td><td>to</td><td>quantity</td><td>percentage</td></thead>';
+        content += '<thead class="thead-light"><td scope="col">from</td><td scope="col">to</td><td scope="col">quantity</td><td scope="col">percentage</td></thead>';
 
         result.forEach(function (item, index) {
           var itemSymbol = item.symbol;
