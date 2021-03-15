@@ -4,7 +4,7 @@
   <script src="https://cdn.jsdelivr.net/npm/sscjs@latest/dist/ssc.min.js"></script>
 </head>
 <body>
-  <img src="brofi.gif" width="40%" height="40%">  
+  <img src="brofi.gif" width="40%" height="40%">
 <h1>simple @BroFi he delegation explorer</h1>
 
 <input type="button" id="updateButton" value="update" onclick="update()"/>
@@ -56,7 +56,7 @@
             var quantity = parseFloat(item.quantity);
             var total = symbols[keySymbol];
             var formattedQuantity = quantity.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
-            var formattedPercentage = ((quantity.toFixed(2)/total) * 100).toFixed(2) + "%";
+            var formattedPercentage = ((quantity.toFixed(2)/total.toFixed(2)) * 100).toFixed(2) + "%";
             content += '<tr><td>@'+ item.from+'</td><td>@'+ item.to+'</td><td align="right">'+formattedQuantity+'</td><td>'+formattedPercentage+'</td></tr>';
             sum += quantity;
           }
