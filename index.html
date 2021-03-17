@@ -19,7 +19,10 @@
   <div class="row">
     <center>
       <div class="col">
-        <div id="brofi-bro-balance" class="alert alert-info" role="alert"></div>
+        <div class="alert alert-info" role="alert">
+          <div id="brofi-bro-balance" style="display:inline-block;"><a href="https://hive-engine.com/?p=market&t=BRO" target="_blank">BRO</a> balance</div>
+          <div id="brofi-bro-ticker" style="display:inline-block;">(.)</div>
+        </div>
         <input type="button" class="btn btn-primary" id="updateButton" value="update delegations" onclick="update()"/>
         <br/>
         <div id="content"></div>
@@ -50,15 +53,30 @@
     // check BRO balance of @brofi
     ssc.findOne('tokens', 'balances', { account: 'brofi', symbol: 'BRO'}, (err, result) => {
       if (result) {
-        var balanceMessage = "@brofi pool balance: " + parseFloat(result.balance).toFixed(2) + " BRO";
-        console.log(balanceMessage);
+        var balanceMessage = "@brofi pool balance: " + parseFloat(result.balance).toFixed(2);
+        console.log(balanceMessage + " BRO");
+        balanceMessage += " <a href='https://hive-engine.com/?p=market&t=BRO' target='_blank'>BRO</a>";
         document.getElementById("brofi-bro-balance").innerHTML = balanceMessage;
         $("#brofi-bro-balance").show();
       } else {
         $("#brofi-bro-balance").hide();
       }
 
-      console.log(err, result);
+      //console.log(err, result);
+    });
+
+    // check BRO ticker
+    ssc.findOne('market', 'metrics', { symbol: 'BRO'}, (err, result) => {
+      if (result) {
+        var tickerMessage = "(" + parseFloat(result.highestBid).toFixed(5) + " x " + parseFloat(result.lowestAsk).toFixed(5) + ")";
+        console.log(tickerMessage);
+        document.getElementById("brofi-bro-ticker").innerHTML = tickerMessage;
+        $("#brofi-bro-ticker").show();
+      } else {
+        $("#brofi-bro-ticker").hide();
+      }
+
+      //console.log(err, result);
     });
 
     // get delegations and build tables
