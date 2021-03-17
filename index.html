@@ -69,21 +69,30 @@
 
       for (var keySymbol in symbols) {
         var sum = 0.0;
-        content += "<br/>";
-        content += "<table class='table table-sm table-striped table-hover' id='resulttable' border='1' style='border: 1px solid #C0C0C0;white-space: nowrap; border-collapse:collapse;' cellpadding='5' cellspacing='0'>";
-        content += "<caption style='text-align:left;font-weight:bold;'>" + keySymbol + "</caption>";
-        content += '<thead class="thead-light" style="background-color:#D3D3D3; font-weight:bold;"><td scope="col">from</td><td scope="col">to</td><td scope="col">quantity</td><td scope="col">percentage</td></thead>';
 
+        var symbolData = [];
         result.forEach(function (item, index) {
           var itemSymbol = item.symbol;
           if (keySymbol === item.symbol)  {
-            var quantity = parseFloat(item.quantity);
-            var total = symbols[keySymbol];
-            var formattedQuantity = quantity.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
-            var formattedPercentage = ((quantity.toFixed(2)/total.toFixed(2)) * 100).toFixed(2) + "%";
-            content += '<tr><td>@'+ item.from+'</td><td>@'+ item.to+'</td><td align="right">'+formattedQuantity+'</td><td align="right">'+formattedPercentage+'</td></tr>';
-            sum += quantity;
+            symbolData.push(item);
           }
+          //console.log(item, index);
+        });
+        symbolData.sort((a,b) => (parseFloat(a.quantity) > parseFloat(b.quantity)) ? -1 : ((parseFloat(b.quantity) > parseFloat(a.quantity)) ? 1 : 0))
+        var numberOfDelegations = symbolData.length;
+
+        content += "<br/>";
+        content += "<table class='table table-sm table-striped table-hover' id='resulttable' border='1' style='border: 1px solid #C0C0C0;white-space: nowrap; border-collapse:collapse;' cellpadding='5' cellspacing='0'>";
+        content += "<caption style='text-align:left;font-weight:bold;'>" + keySymbol + " (#delegations=" + numberOfDelegations + ")</caption>";
+        content += '<thead class="thead-light" style="background-color:#D3D3D3; font-weight:bold;"><td scope="col">from</td><td scope="col">to</td><td scope="col">quantity</td><td scope="col">percentage</td></thead>';
+
+        symbolData.forEach(function (item, index) {
+          var quantity = parseFloat(item.quantity);
+          var total = symbols[keySymbol];
+          var formattedQuantity = quantity.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+          var formattedPercentage = ((quantity.toFixed(2)/total.toFixed(2)) * 100).toFixed(2) + "%";
+          content += '<tr><td>@'+ item.from+'</td><td>@'+ item.to+'</td><td align="right">'+formattedQuantity+'</td><td align="right">'+formattedPercentage+'</td></tr>';
+          sum += quantity;
           //console.log(item, index);
         });
 
