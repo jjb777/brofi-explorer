@@ -167,10 +167,16 @@
 
   update();
 
-  // add enter key binding
-  $(document).on('keypress',function(e) {
-    if(e.which == 13) {
-        update();
+  // add enter and escape key binding
+  $(document).on('keyup',function(e) {
+    if(e.keyCode == 13) {
+      // enter
+      update();
+    }
+    if (e.keyCode == 27) {
+      // escape
+      document.getElementById("filter").value = '';
+      update();
     }
   });
 </script>
