@@ -166,6 +166,13 @@
   }
 
   update();
+
+  // add enter key binding
+  $(document).on('keypress',function(e) {
+    if(e.which == 13) {
+        update();
+    }
+  });
 </script>
 </body>
 </html>
