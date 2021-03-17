@@ -21,6 +21,7 @@
       <div class="col">
         <input type="button" class="btn btn-primary" id="updateButton" value="update" onclick="update()"/>
         <br/><br/>
+        <div id="brofi-bro-balance" class="alert alert-info" role="alert"></div>
         <div id="content"></div>
       </div>
     </center>
@@ -46,6 +47,21 @@
       params['to'] = to;
     }
 
+    // check BRO balance of @brofi
+    ssc.findOne('tokens', 'balances', { account: 'brofi', symbol: 'BRO'}, (err, result) => {
+      if (result) {
+        var balanceMessage = "@brofi pool balance: " + parseFloat(result.balance).toFixed(2) + " BRO";
+        console.log(balanceMessage);
+        document.getElementById("brofi-bro-balance").innerHTML = balanceMessage;
+        $("#brofi-bro-balance").show();
+      } else {
+        $("#brofi-bro-balance").hide();
+      }
+
+      console.log(err, result);
+    });
+
+    // get delegations and build tables
     ssc.find(
     'tokens',
     'delegations',
