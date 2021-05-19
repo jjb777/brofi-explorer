@@ -1,0 +1,184 @@
+<html>
+<head>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sscjs@latest/dist/ssc.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+<div class="jumbotron jumbotron-fluid">
+  <div class="container">
+    <h2 class="display-4" id="brofi-image"><center><img src="brofi.gif"><center></h2>
+    <center><h2 class="lead">simple <a href="https://hive.blog/@brofi" target="_blank">@BroFi</a> hive-engine delegation explorer</h2></center>
+  </div>
+</div>
+
+<div class="container" style="max-width:600px">
+  <div class="row">
+    <center>
+      <div class="col">
+        <div class="alert alert-info" role="alert">
+          <div id="brofi-bro-balance" style="display:inline-block;"><a href="https://hive-engine.com/?p=market&t=BRO" target="_blank">BRO</a> balance</div>
+          <div id="brofi-bro-ticker" style="display:inline-block;">(.)</div>
+        </div>
+        <div class="row">
+          <label for="filter">Filter</label>
+          <input id="filter" name="filter" type="text" value="" data-toggle="tooltip" data-placement="bottom" title="Filter by account (e.g. jjb777)"/>
+          <input type="button" class="btn btn-primary" id="updateButton" value="update delegations" onclick="update()"/>
+        </div>
+        <br/>
+        <div id="content"></div>
+      </div>
+    </center>
+  </div>
+</div>
+<script>
+  const ssc = new SSC('https://api.hive-engine.com/rpc');
+
+  // update function
+  function update() {
+
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('mode') && urlParams.get('mode') === 'marky') {
+      // marky mode: do not diaply brofi image
+      $( "#brofi-image" ).hide();
+    }
+
+
+    var to = 'brofi';
+    var params = {};
+
+    if (to) {
+      params['to'] = to;
+    }
+
+    // check BRO balance of @brofi
+    ssc.findOne('tokens', 'balances', { account: 'brofi', symbol: 'BRO'}, (err, result) => {
+      if (result) {
+        var balanceMessage = "@brofi pool balance: " + parseFloat(result.balance).toFixed(2);
+        console.log(balanceMessage + " BRO");
+        balanceMessage += " <a href='https://hive-engine.com/?p=market&t=BRO' target='_blank'>BRO</a>";
+        document.getElementById("brofi-bro-balance").innerHTML = balanceMessage;
+        $("#brofi-bro-balance").show();
+      } else {
+        $("#brofi-bro-balance").hide();
+      }
+
+      //console.log(err, result);
+    });
+
+    // check BRO ticker
+    ssc.findOne('market', 'metrics', { symbol: 'BRO'}, (err, result) => {
+      if (result) {
+        var tickerMessage = "(" + parseFloat(result.highestBid).toFixed(5) + " x " + parseFloat(result.lowestAsk).toFixed(5) + ")";
+        console.log(tickerMessage);
+        document.getElementById("brofi-bro-ticker").innerHTML = tickerMessage;
+        $("#brofi-bro-ticker").show();
+      } else {
+        $("#brofi-bro-ticker").hide();
+      }
+
+      //console.log(err, result);
+    });
+
+    // get delegations and build tables
+    ssc.find(
+    'tokens',
+    'delegations',
+    params, 1000, 0, [], (err, result) => {
+
+    if (result) {
+      var symbols = {};
+      var table = document.getElementById("content");
+      var filter = document.getElementById("filter").value;
+      var userSum = 0.0;
+
+      result.forEach(function (item, index) {
+        var symbol = item.symbol;
+        if (symbol in symbols) {
+          symbols[symbol] = symbols[symbol] + parseFloat(item.quantity);
+        } else {
+          symbols[symbol] = parseFloat(item.quantity);
+        }
+      });
+      console.log(symbols);
+
+      var content = "";
+
+      for (var keySymbol in symbols) {
+        var sum = 0.0;
+        var rank = 1;
+        var symbolContent = "";
+        var addToContent = false;
+
+        var symbolData = [];
+        result.forEach(function (item, index) {
+          var itemSymbol = item.symbol;
+          if (keySymbol === item.symbol)  {
+            symbolData.push(item);
+          }
+          //console.log(item, index);
+        });
+        symbolData.sort((a,b) => (parseFloat(a.quantity) > parseFloat(b.quantity)) ? -1 : ((parseFloat(b.quantity) > parseFloat(a.quantity)) ? 1 : 0))
+        var numberOfDelegations = symbolData.length;
+        var total = symbols[keySymbol];
+        
+        symbolContent += "<br/>";
+        symbolContent += "<table class='table table-sm table-striped table-hover' id='resulttable' border='1' style='border: 1px solid #C0C0C0;white-space: nowrap; border-collapse:collapse;' cellpadding='5' cellspacing='0'>";
+        symbolContent += "<caption style='text-align:left;font-weight:bold;'>" + keySymbol + " (#delegations=" + numberOfDelegations + ", totalQuantity=" + total.toFixed(2) +  ")</caption>";
+        symbolContent += '<thead class="thead-light" style="background-color:#D3D3D3; font-weight:bold;"><td scope="col">Rank</td><td scope="col">From</td><td scope="col">To</td><td scope="col">Quantity</td><td scope="col">Percentage</td></thead>';
+
+        symbolData.forEach(function (item, index) {
+          var quantity = parseFloat(item.quantity);
+          var formattedQuantity = quantity.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+          var formattedPercentage = ((quantity.toFixed(2)/total.toFixed(2)) * 100).toFixed(2) + "%";
+          if ((filter === undefined) || (filter === '') || (filter === item.from)) {
+            symbolContent += '<tr><td aling="right">#'+rank+'</td><td>@'+ item.from+'</td><td>@'+ item.to+'</td><td align="right">'+formattedQuantity+'</td><td align="right">'+formattedPercentage+'</td></tr>';
+            addToContent = true;
+            userSum += quantity;
+          }
+          sum += quantity;
+          rank += 1;
+          //console.log(item, index);
+        });
+
+        var formattedSum = sum.toFixed(2).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+        symbolContent += '<tfoot><td></td><td></td><td></td><td align="right" style="font-weight: bold;">'+formattedSum+'</td><td></td></tfoot>';
+        symbolContent += '</table>';
+
+        if (addToContent) {
+          content += symbolContent;
+        }
+      }
+
+      table.innerHTML = content;
+    }
+
+    if (err) {
+      var table = document.getElementById("content");
+      table.innerHTML = "An error occured: " + err;
+    }
+
+    console.log(err, result);
+    });
+  }
+
+  update();
+
+  // add enter and escape key binding
+  $(document).on('keyup',function(e) {
+    if(e.keyCode == 13) {
+      // enter
+      update();
+    }
+    if (e.keyCode == 27) {
+      // escape
+      document.getElementById("filter").value = '';
+      update();
+    }
+  });
+</script>
+</body>
+</html>
